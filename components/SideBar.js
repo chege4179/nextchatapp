@@ -51,7 +51,7 @@ const SideBar = () => {
 		}
 	}
 	return (
-		<div className='w-1/3 border border-black flex flex-col'>
+		<div className='w-1/3 border border-black flex flex-col rounded-l'>
 			<div className='w-full h-16 border-b-black flex items-center justify-around px-2'>
 				<div className='w-12 h-12 relative' onClick={() => signOut()}>
 					<Image src={session.user.image} layout='fill' className='rounded-3xl' alt={session.user.name} />
@@ -83,7 +83,10 @@ const SideBar = () => {
 					return <UserCard key={index} user={user}/>
 				})
 			}
-			<h1>My Chats</h1>
+			<div className="w-full h-8 flex justify-center items-center">
+				<h1>My Chats</h1>
+			</div>
+
 			{
 				chats.map((chat,index) => {
 					return <UserCard key={index} user={chat}/>

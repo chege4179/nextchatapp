@@ -15,7 +15,7 @@ const UserCard = ({ user }) => {
 
 	}
 	return (
-		<div className='w-full h-16 border border-black flex items-center px-2 hover:bg-gray-500' onClick={SetActiveChat}>
+		<div className='w-full h-16 border border-black flex items-center px-2 hover:bg-gray-200' onClick={SetActiveChat}>
 			<div className='w-12 h-12 relative' onClick={() => signOut()}>
 				<Image src={user.imageUrl} layout='fill' className='rounded-3xl' alt={user.name} />
 			</div>

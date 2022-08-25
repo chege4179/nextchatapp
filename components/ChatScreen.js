@@ -35,8 +35,8 @@ const ChatScreen = () => {
 
 	}, []);
 	return (
-		<div className='w-full h-full flex  justify-center items-center'>
-			<div className='w-full h-5/6 border border-black flex max-w-screen-xl '>
+		<div className='w-full h-full flex justify-center items-center '>
+			<div className='w-full h-5/6 border border-black flex max-w-screen-xl rounded'>
 				<SideBar/>
 				<ChatBox/>
 			</div>

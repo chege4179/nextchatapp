@@ -68,6 +68,13 @@ const ChatBox = () => {
 		setMessageText("")
 		socket.emit("send-message",message)
 	}
+	const handleKeyDown = (event) => {
+		if (event.key === 'Enter') {
+			if (messageText !== ""){
+				SendMessage()
+			}
+		}
+	}
 
 
 	return (
@@ -114,6 +121,7 @@ const ChatBox = () => {
 									onChange={(e) =>setMessageText(e.target.value)}
 									className='w-full h-full outline-none'
 									placeholder='Type message........'
+									onKeyDown={handleKeyDown}
 								/>
 								<div onClick={SendMessage} className="cursor-pointer hover:bg-gray-500 rounded-2xl p-2  w-10 h-10 flex items-center justify-center">
 									<IoSendSharp size={23} />
@@ -124,7 +132,10 @@ const ChatBox = () => {
 					</div>
 
 				):(
-					<h1>Welcome to this Chat App</h1>
+					<div className="w-full h-full flex items-center justify-center">
+						<h1>Welcome to this Chat App</h1>
+					</div>
+
 				)
 			}
 
