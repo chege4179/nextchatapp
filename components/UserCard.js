@@ -9,13 +9,16 @@ const UserCard = ({ user }) => {
 
 	const SetActiveChat =() => {
 		dispatch({
+			type:UserActions.REMOVE_ACTIVE_MESSAGES,
+		})
+		dispatch({
 			type:UserActions.SET_ACTIVE_CHAT,
 			payload:user
 		})
 
 	}
 	return (
-		<div className='w-full h-16 border border-black flex items-center px-2 hover:bg-gray-200' onClick={SetActiveChat}>
+		<div className='w-full h-16 border border-black flex items-center px-2 hover:bg-gray-200 hover:cursor-pointer' onClick={SetActiveChat}>
 			<div className='w-12 h-12 relative' onClick={() => signOut()}>
 				<Image src={user.imageUrl} layout='fill' className='rounded-3xl' alt={user.name} />
 			</div>

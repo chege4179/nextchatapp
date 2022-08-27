@@ -3,7 +3,7 @@ import {signOut, useSession} from "next-auth/react";
 import Image from 'next/image'
 import UserCard from "./UserCard";
 import {BsSearch} from "react-icons/bs";
-import {BaseURL} from "../util/config";
+import {BaseURL, socket} from "../util/config";
 
 
 const SideBar = () => {
@@ -50,11 +50,21 @@ const SideBar = () => {
 			}
 		}
 	}
+	const LogOut = () => {
+		socket.emit("leaveRoom",{ email:session.user.email })
+		signOut().then(() => {
+			console.log("Successfully Logged out")
+
+		})
+		.catch((err) => {
+			console.log("Err",err)
+		})
+	}
 	return (
 		<div className='w-1/3 border border-black flex flex-col rounded-l'>
 			<div className='w-full h-16 border-b-black flex items-center justify-around px-2'>
-				<div className='w-12 h-12 relative' onClick={() => signOut()}>
-					<Image src={session.user.image} layout='fill' className='rounded-3xl' alt={session.user.name} />
+				<div className='w-12 h-12 relative' onClick={LogOut}>
+					<Image src={session.user.image} layout='fill' className='rounded-3xl cursor-pointer' alt={session.user.name} />
 				</div>
 				<div className='w-5/6'>
 					<h2>{session.user.email}</h2>

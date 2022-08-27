@@ -32,12 +32,4 @@ const ReceiverMessage = ({ message,imageUrl }) => {
 	)
 }
 export { MyMessage,ReceiverMessage };
-// <div className={`h-16 w-1/2 bg-indigo-500 m-4 flex flex-col items-end p-2`}>
-// 	<h1>{message.sender}</h1>
-// 	<div>
-// 		<h1>{message.message}</h1>
-// 		<h1>{message.sentAt}</h1>
-// 	</div>
-// 	{/*<h1>{message._id}</h1>*/}
-// 	{/*<h1>{message.receiver}</h1>*/}
-// </div>
+

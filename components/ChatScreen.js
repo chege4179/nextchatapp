@@ -28,11 +28,12 @@ const ChatScreen = () => {
 	}
 	useEffect(() => {
 		addUser().then(() => {
-
 			socket.emit("connected",{ email:user.data.user.email })
+			socket.emit("add-user",user.data.user.email)
 		})
-
-
+		return () => {
+			socket.emit("disconnect",{ email:user.data.user.email })
+		}
 	}, []);
 	return (
 		<div className='w-full h-full flex justify-center items-center '>

@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {SelectActiveChat} from "../ReduxStore/ActiveChatReducer";
 import Image from 'next/image'
 import {AiOutlineSearch} from "react-icons/ai";
@@ -9,13 +9,18 @@ import { MyMessage,ReceiverMessage } from "./Message";
 import {useSession} from "next-auth/react";
 import {BaseURL, socket} from "../util/config";
 import moment from "moment";
+import activeMessagesReducer, {SelectMessages} from "../ReduxStore/ActiveMessagesReducer";
+import {UserActions} from "../ReduxStore/UserConstants";
 
 const ChatBox = () => {
+	const dispatch = useDispatch()
 	const session = useSession()
 	const user = session.data
 	const activeChat = useSelector(SelectActiveChat)
+	const activeMessages = useSelector(SelectMessages)
 	const [messageText,setMessageText] = useState("")
 	const [messages,setMessages] = useState([])
+	const [isOnline,setIsOnline] = useState(false)
 	const chatBox = useRef()
 	const AlwaysScrollToBottom = () => {
 		const elementRef = useRef();
@@ -24,22 +29,31 @@ const ChatBox = () => {
 	};
 
 	useEffect(() => {
+		console.log("Active Chat",activeChat)
 		if (activeChat !== null){
 			socket.on("receive-message",(message) => {
-
+				console.log("Receive Message Event")
 				if (message.receiver === user.user.email){
-					setMessages([...messages,message])
+					// fetchMessages()
+					dispatch({
+						type:UserActions.ADD_MESSAGE,
+						payload:message
+					})
+					console.log("Message added on receiver")
 				}
 			})
 		}
 	},[])
 
-	const fetchMessages = async (e) => {
+	const fetchMessages = async () => {
 		try {
 			const searchRes = await fetch(`${BaseURL}/chat/message/${user.user.email}/${activeChat.email}`)
 			const res = await searchRes.json()
 			console.log("Chat messages res",res)
-			setMessages(res.messages)
+			dispatch({
+				type:UserActions.SET_ACTIVE_MESSAGES,
+				payload:res.messages
+			})
 
 		}catch (e){
 			console.log('error in search users')
@@ -50,9 +64,7 @@ const ChatBox = () => {
 	useEffect(() => {
 		if (activeChat !== null){
 			fetchMessages()
-			socket.emit("joinRoom",{ sender:user.user.email,receiver:activeChat.email })
 		}
-
 	},[activeChat])
 
 
@@ -64,9 +76,19 @@ const ChatBox = () => {
 			sentAt:moment().format('LT'),
 			receiver:activeChat.email,
 		}
-		setMessages([...messages,{ ...message,id:Math.floor((Math.random() * 1000) + 1) }])
+
 		setMessageText("")
-		socket.emit("send-message",message)
+		socket.emit("send-message",{
+			to:activeChat.email,
+			from:user.user.email,
+			message
+		})
+		dispatch({
+			type:UserActions.ADD_MESSAGE,
+			payload:{ ...message,id:Math.floor((Math.random() * 1000) + 1) }
+		})
+		console.log("Message added on sender")
+
 	}
 	const handleKeyDown = (event) => {
 		if (event.key === 'Enter') {
@@ -89,7 +111,13 @@ const ChatBox = () => {
 								</div>
 							</div>
 							<div className='w-full pl-8 flex justify-between'>
-								<h1 className='font-bold '>{activeChat.name}</h1>
+								<div>
+									<h1 className='font-bold '>{activeChat.name}</h1>
+									<h1 className={`font-bold ${isOnline ? 'text-green-500': 'text-red-500'}`}>
+										{isOnline ? "User is Online" : "User is offline"}
+									</h1>
+								</div>
+
 								<div className='flex justify-evenly'>
 									<AiOutlineSearch size={23} />
 									<BsThreeDotsVertical size={23}/>
@@ -98,7 +126,7 @@ const ChatBox = () => {
 						</div>
 						<div className='w-full h-full flex-1 overflow-y-scroll p-4' ref={chatBox}>
 							{
-								messages.map((message,index) => {
+								activeMessages.map((message,index) => {
 									if (message.sender === user.user.email){
 										return (
 											<MyMessage message={message} key={index} imageUrl={user.user.image}/>
